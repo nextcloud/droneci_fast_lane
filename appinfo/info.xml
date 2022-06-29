@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <id>droneci_fast_line</id>
+    <name>DroneCI Fast Lane</name>
+    <summary>Queue manager for Drone CI</summary>
+    <description><![CDATA[A simple manager to manipulate Drone CI's FIFO queue.]]></description>
+    <version>1.0.0</version>
+    <licence>agpl</licence>
+    <author mail="blizzz@arthur-schiwon.de" >Arthur Schiwon</author>
+    <namespace>DroneciFastLane</namespace>
+    <category>tools</category>
+    <bugs>https://github.com/nextcloud/droneci_fast_lane</bugs>
+    <dependencies>
+        <nextcloud min-version="24" max-version="25"/>
+    </dependencies>
+</info>
