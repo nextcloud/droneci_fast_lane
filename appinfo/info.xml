@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
-    <id>droneci_fast_line</id>
+    <id>droneci_fast_lane</id>
     <name>DroneCI Fast Lane</name>
     <summary>Queue manager for Drone CI</summary>
     <description><![CDATA[A simple manager to manipulate Drone CI's FIFO queue.]]></description>
@@ -14,4 +14,7 @@
     <dependencies>
         <nextcloud min-version="24" max-version="25"/>
     </dependencies>
+    <commands>
+        <command>OCA\DroneciFastLane\Command\ListQueue</command>
+    </commands>
 </info>
