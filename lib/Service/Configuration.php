@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2021 Arthur Schiwon <blizzz@arthur-schiwon.de>
+ * @copyright Copyright (c) 2022 Arthur Schiwon <blizzz@arthur-schiwon.de>
  *
  * @author Arthur Schiwon <blizzz@arthur-schiwon.de>
  *
@@ -28,6 +28,7 @@ namespace OCA\DroneciFastLane\Service;
 
 use OCA\DroneciFastLane\AppInfo\Application;
 use OCP\IConfig;
+use RuntimeException;
 
 class Configuration {
 
@@ -41,7 +42,7 @@ class Configuration {
 		$host = $this->config->getAppValue(Application::APP_ID, 'host');
 		$host = filter_var($host, FILTER_VALIDATE_URL);
 		if ($host === false) {
-			throw new \RuntimeException('Invalid DroneCI host');
+			throw new RuntimeException('Invalid DroneCI host');
 		}
 		return rtrim($host, '/');
 	}
@@ -49,7 +50,7 @@ class Configuration {
 	public function getToken(): string {
 		$token = trim($this->config->getAppValue(Application::APP_ID, 'apitoken'));
 		if ($token === '') {
-			throw new \RuntimeException('Drone API token not set');
+			throw new RuntimeException('Drone API token not set');
 		}
 		return $token;
 	}
