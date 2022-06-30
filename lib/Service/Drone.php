@@ -40,6 +40,7 @@ class Drone {
 
 	protected const API_ENDPOINT_REPOS = '/api/user/repos';
 	protected const API_ENDPOINT_BUILDS = '/api/repos/%s/%s/builds';
+	protected const API_ENDPOINT_BUILD = '/api/repos/%s/%s/builds/%d';
 
 	private Configuration $configuration;
 	private IClientService $httpClientService;
@@ -114,16 +115,33 @@ class Drone {
 		}
 
 		foreach ($buildList as $buildItem) {
-			$build = new Build();
-			$build
-				->setStatus($buildItem['status'])
-				->setTitle($buildItem['title'] ?? $buildItem['message'])
-				->setNumber((int)$buildItem['number'])
-				->setEvent($buildItem['event'])
-				->setNamespace($namespace)
-				->setRepo($repo);
-
-			yield $build;
+			yield $this->buildItemToObject($buildItem, $namespace, $repo);
 		}
+	}
+
+	public function getBuildInfo(int $number, string $namespace, string $repo): Build {
+		$client = $this->httpClientService->newClient();
+
+		$endpoint = sprintf(self::API_ENDPOINT_BUILD, $namespace, $repo, $number);
+		try {
+			$response = $client->get($this->configuration->getHost() . $endpoint, $this->getBaseHeaders());
+			$buildItem = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+			return $this->buildItemToObject($buildItem, $namespace, $repo);
+		} catch (Exception $e) {
+			throw new RuntimeException('Error while getting build list', $e->getCode(), $e);
+		}
+	}
+
+	protected function buildItemToObject(array $buildItem, string $namespace, string $repo): Build {
+		$build = new Build();
+		$build
+			->setStatus($buildItem['status'])
+			->setTitle($buildItem['title'] ?? $buildItem['message'])
+			->setNumber((int)$buildItem['number'])
+			->setEvent($buildItem['event'])
+			->setNamespace($namespace)
+			->setRepo($repo);
+
+		return $build;
 	}
 }

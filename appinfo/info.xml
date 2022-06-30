@@ -15,6 +15,7 @@
         <nextcloud min-version="24" max-version="25"/>
     </dependencies>
     <commands>
-        <command>OCA\DroneciFastLane\Command\ListQueue</command>
+		<command>OCA\DroneciFastLane\Command\ListPrioritized</command>
+		<command>OCA\DroneciFastLane\Command\ListQueue</command>
     </commands>
 </info>
