@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace OCA\DroneciFastLane\Service;
 
 use Exception;
+use Generator;
 use RuntimeException;
 use OCA\DroneciFastLane\Model\Build;
 use OCP\Http\Client\IClientService;
@@ -64,39 +65,44 @@ class Drone {
 	}
 
 	/**
-	 * @throws Exception
-	 * @return Build[]
+	 * @throws RuntimeException
+	 * @returns Generator<Build>
 	 */
-	public function getBuildQueue(): array {
+	public function getBuildQueue(): Generator {
 		$client = $this->httpClientService->newClient();
 
-		$response = $client->get(
-			$this->configuration->getHost() . self::API_ENDPOINT_REPOS,
-			$this->getBaseHeaders()
-		);
+		try {
+			$response = $client->get(
+				$this->configuration->getHost() . self::API_ENDPOINT_REPOS,
+				$this->getBaseHeaders()
+			);
+			$repoList = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+		} catch (Exception $e) {
+			throw new RuntimeException('Error while getting repo list', $e->getCode(), $e);
+		}
 
-		$repoList = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
-		$buildList = [];
 		foreach ($repoList as $repoItem) {
 			if(!$repoItem['active']) {
 				// ignore disabled repositories
 				continue;
 			}
-			$buildList = array_merge($buildList, $this->getBuildList($repoItem['namespace'], $repoItem['name']));
-		}
 
-		return array_filter($buildList, function (Build $build) {
-			return in_array($build->getStatus(),
-				[self::BUILD_STATUS_PENDING, self::BUILD_STATUS_RUNNING]
-			);
-		});
+			$genBuild = $this->getBuildList($repoItem['namespace'], $repoItem['name']);
+			foreach ($genBuild as $build) {
+				if (in_array($build->getStatus(),
+					[self::BUILD_STATUS_PENDING, self::BUILD_STATUS_RUNNING]
+				)) {
+					yield $build;
+				}
+			}
+		}
 	}
 
 	/**
-	 * @returns Build[]
+	 * @returns Generator<Build>
 	 * @throws RuntimeException
 	 */
-	protected function getBuildList(string $namespace, string $repo): array {
+	protected function getBuildList(string $namespace, string $repo): Generator {
 		$client = $this->httpClientService->newClient();
 
 		$endpoint = sprintf(self::API_ENDPOINT_BUILDS, $namespace, $repo);
@@ -106,7 +112,7 @@ class Drone {
 		} catch (Exception $e) {
 			throw new RuntimeException('Error while getting build list', $e->getCode(), $e);
 		}
-		$builds = [];
+
 		foreach ($buildList as $buildItem) {
 			$build = new Build();
 			$build
@@ -117,8 +123,7 @@ class Drone {
 				->setNamespace($namespace)
 				->setRepo($repo);
 
-			$builds[] = $build;
+			yield $build;
 		}
-		return $builds;
 	}
 }

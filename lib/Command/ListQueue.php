@@ -46,8 +46,8 @@ class ListQueue extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
-		$builds = $this->droneService->getBuildQueue();
-		foreach ($builds as $build) {
+		$genBuild = $this->droneService->getBuildQueue();
+		foreach ($genBuild as $build) {
 			$lineBreak = strpos($build->getTitle(), "\n");
 			$title = substr($build->getTitle(),0, min($lineBreak ?: 60, 60));
 			if (strlen($title) < strlen($build->getTitle())) {
