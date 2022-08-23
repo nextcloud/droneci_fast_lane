@@ -29,7 +29,7 @@ namespace OCA\DroneciFastLane\Service;
 use Exception;
 use Generator;
 use RuntimeException;
-use OCA\DroneciFastLane\Model\Build;
+use OCA\DroneciFastLane\Entity\DroneBuild;
 use OCP\Http\Client\IClientService;
 use function json_decode;
 use function sprintf;
@@ -67,7 +67,7 @@ class Drone {
 
 	/**
 	 * @throws RuntimeException
-	 * @returns Generator<Build>
+	 * @returns Generator<string, DroneBuild>
 	 */
 	public function getBuildQueue(): Generator {
 		$client = $this->httpClientService->newClient();
@@ -89,18 +89,22 @@ class Drone {
 			}
 
 			$genBuild = $this->getBuildList($repoItem['namespace'], $repoItem['name']);
-			foreach ($genBuild as $build) {
+			/**
+			 * @var string $key
+			 * @var DroneBuild $build
+			 */
+			foreach ($genBuild as $key => $build) {
 				if (in_array($build->getStatus(),
 					[self::BUILD_STATUS_PENDING, self::BUILD_STATUS_RUNNING]
 				)) {
-					yield $build;
+					yield $key => $build;
 				}
 			}
 		}
 	}
 
 	/**
-	 * @returns Generator<Build>
+	 * @returns Generator<string, DroneBuild, void, DroneBuild>
 	 * @throws RuntimeException
 	 */
 	protected function getBuildList(string $namespace, string $repo): Generator {
@@ -115,11 +119,15 @@ class Drone {
 		}
 
 		foreach ($buildList as $buildItem) {
-			yield $this->buildItemToObject($buildItem, $namespace, $repo);
+			$buildObj = $this->buildItemToObject($buildItem, $namespace, $repo);
+			yield $buildObj->uniqueName() => $buildObj;
 		}
 	}
 
-	public function getBuildInfo(int $number, string $namespace, string $repo): Build {
+	/**
+	 * @throws RuntimeException
+	 */
+	public function getBuildInfo(int $number, string $namespace, string $repo): DroneBuild {
 		$client = $this->httpClientService->newClient();
 
 		$endpoint = sprintf(self::API_ENDPOINT_BUILD, $namespace, $repo, $number);
@@ -132,15 +140,32 @@ class Drone {
 		}
 	}
 
-	protected function buildItemToObject(array $buildItem, string $namespace, string $repo): Build {
-		$build = new Build();
-		$build
-			->setStatus($buildItem['status'])
-			->setTitle($buildItem['title'] ?? $buildItem['message'])
-			->setNumber((int)$buildItem['number'])
-			->setEvent($buildItem['event'])
-			->setNamespace($namespace)
-			->setRepo($repo);
+	/**
+	 * @throws RuntimeException
+	 */
+	public function restartBuild(DroneBuild $build): DroneBuild {
+		$client = $this->httpClientService->newClient();
+
+		$endpoint = sprintf(self::API_ENDPOINT_BUILD, $build->getNamespace(), $build->getRepo(), $build->getNumber());
+		try {
+			$client->delete($this->configuration->getHost() . $endpoint, $this->getBaseHeaders());
+			$response = $client->post($this->configuration->getHost() . $endpoint, $this->getBaseHeaders());
+			$buildItem = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+			return $this->buildItemToObject($buildItem, $build->getNamespace(), $build->getRepo());
+		} catch (Exception $e) {
+			throw new RuntimeException('Error while restarting build', $e->getCode(), $e);
+		}
+	}
+
+	protected function buildItemToObject(array $buildItem, string $namespace, string $repo): DroneBuild {
+		$build = new DroneBuild();
+		$build->setStatus($buildItem['status']);
+		$build->setTitle($buildItem['title'] ?? $buildItem['message']);
+		$build->setNumber((int)$buildItem['number']);
+		$build->setEvent($buildItem['event']);
+		$build->setCreatedAt((int)$buildItem['created']);
+		$build->setNamespace($namespace);
+		$build->setRepo($repo);
 
 		return $build;
 	}

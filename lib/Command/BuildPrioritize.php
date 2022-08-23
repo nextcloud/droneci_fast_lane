@@ -27,12 +27,11 @@ declare(strict_types=1);
 namespace OCA\DroneciFastLane\Command;
 
 use OCA\DroneciFastLane\Service\Prioritization;
-use OCP\DB\Exception;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ListPrioritized extends Command {
+class BuildPrioritize extends \Symfony\Component\Console\Command\Command {
 
 	private Prioritization $prioritization;
 
@@ -42,32 +41,38 @@ class ListPrioritized extends Command {
 	}
 
 	protected function configure(): void {
-		$this->setName('droneci:list:prioritized');
+		$this->setName('droneci:build:prioritize');
 		$this->setDescription('Lists running and pending priorized builds on drone');
+
+		$this->addArgument(
+			'slug',
+			InputArgument::REQUIRED,
+			'The combination of repo and owner, e.g. nextcloud/server',
+		);
+
+		$this->addArgument(
+			'build',
+			InputArgument::REQUIRED,
+			'The build number'
+		);
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	protected function execute(InputInterface $input, OutputInterface $output): int {
-		$generator = $this->prioritization->getQueue();
-		$isEmpty = true;
-		foreach ($generator as $build) {
-			$isEmpty = false;
-			$lineBreak = strpos($build->getTitle(), "\n");
-			$title = substr($build->getTitle(),0, min($lineBreak ?: 60, 60));
-			if (strlen($title) < strlen($build->getTitle())) {
-				$title .= '…';
-			}
-			$title = str_replace(["\r", "\n"], '', $title);
-
-			$out = sprintf("- %d\t%s\t%s\t%s\n\t%s\n", $build->getNumber(), $build->getEvent(), $build->getStatus(), $build->getRepo(), $title);
-			$output->write($out);
+		if (empty($input->getArgument('slug'))) {
+			throw new \InvalidArgumentException('Slug must not be empty');
 		}
 
-		if ($isEmpty) {
-			$output->writeln('No queued prioritized builds.');
+		$build = (int)$input->getArgument('build');
+		if ($build <= 0) {
+			throw new \InvalidArgumentException('Build must not be 0 or lower');
 		}
+
+		if (!$this->prioritization->setPrioritized($input->getArgument(trim('slug')), $build)) {
+			$output->writeln('<error>Could not prioritize this build</error>');
+			return 1;
+		}
+
+		$this->prioritization->reorganizeQueue();
 
 		return 0;
 	}

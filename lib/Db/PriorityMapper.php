@@ -26,18 +26,18 @@ declare(strict_types=1);
 
 namespace OCA\DroneciFastLane\Db;
 
+use OCA\DroneciFastLane\Entity\BasicBuild;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\Exception;
 use OCP\IDBConnection;
 
 class PriorityMapper extends QBMapper {
-
 	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'droneci_fl_prioritized', PrioritizedBuild::class);
+		parent::__construct($db, 'droneci_fl_prioritized', BasicBuild::class);
 	}
 
 	/**
-	 * @return PrioritizedBuild[]
+	 * @return BasicBuild[]
 	 * @throws Exception
 	 */
 	public function getBuilds(): array {

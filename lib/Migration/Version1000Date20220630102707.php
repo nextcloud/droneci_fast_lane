@@ -66,6 +66,11 @@ class Version1000Date20220630102707 extends SimpleMigrationStep {
 				'notnull' => true,
 				'length' => 255,
 			]);
+			$table->addColumn('created_at', Types::INTEGER, [
+					'notnull' => true,
+					'unsigned' => true,
+				]
+			);
 
 			$table->setPrimaryKey(['id']);
 			$table->addUniqueIndex(['number', 'namespace', 'repo'], 'prio_build');

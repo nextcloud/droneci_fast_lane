@@ -24,23 +24,25 @@ declare(strict_types=1);
  *
  */
 
-namespace OCA\DroneciFastLane\Db;
-
-use OCP\AppFramework\Db\Entity;
+namespace OCA\DroneciFastLane\Entity;
 
 /**
- * @method int getNumber()
- * @method string getNamespace()
- * @method string getRepo()
+ * @method void setStatus(string $status)
+ * @method void setTitle(string $title)
+ * @method void setEvent(string $event)
+ * @method string getStatus()
+ * @method string getTitle()
+ * @method string getEvent()
  */
-class PrioritizedBuild extends Entity {
-	protected int $number;
-	protected string $namespace;
-	protected string $repo;
+class DroneBuild extends BasicBuild {
+	protected string $status = '';
+	protected string $title = '';
+	protected string $event = '';
 
 	public function __construct() {
-		$this->addType('number', 'int');
-		$this->addType('namespace', 'string');
-		$this->addType('repo', 'string');
+		parent::__construct();
+		$this->addType('status', 'string');
+		$this->addType('title', 'string');
+		$this->addType('event', 'string');
 	}
 }
