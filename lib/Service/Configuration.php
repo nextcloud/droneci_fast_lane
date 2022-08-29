@@ -54,4 +54,10 @@ class Configuration {
 		}
 		return $token;
 	}
+
+	public function getRooms(): array {
+		$roomList = trim($this->config->getAppValue(Application::APP_ID, 'rooms'));
+		$rooms = explode(',', $roomList);
+		return array_map('trim', $rooms);
+	}
 }

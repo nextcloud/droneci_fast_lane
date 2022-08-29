@@ -26,12 +26,33 @@ declare(strict_types=1);
 
 namespace OCA\DroneciFastLane\AppInfo;
 
+use OCA\DroneciFastLane\Listener\TalkListener;
+use OCA\Talk\Chat\ChatManager;
+use OCP\App\IAppManager;
 use OCP\AppFramework\App;
+use OCP\AppFramework\Bootstrap\IBootContext;
+use OCP\AppFramework\Bootstrap\IBootstrap;
+use OCP\AppFramework\Bootstrap\IRegistrationContext;
+use OCP\EventDispatcher\IEventDispatcher;
 
-class Application extends App {
+class Application extends App implements IBootstrap {
 	public const APP_ID = 'droneci_fast_lane';
 
 	public function __construct() {
 		parent::__construct(self::APP_ID);
+	}
+
+	public function register(IRegistrationContext $context): void {
+	}
+
+	public function boot(IBootContext $context): void {
+		/** @var IAppManager $appManager */
+		$appManager = $context->getServerContainer()->get(IAppManager::class);
+
+		if ($appManager->isEnabledForUser('spreed')) {
+			/** @var IEventDispatcher $dispatcher */
+			$dispatcher = $context->getServerContainer()->get(IEventDispatcher::class);
+			$dispatcher->addListener(ChatManager::EVENT_BEFORE_MESSAGE_SEND, [TalkListener::class, 'handleCommand']);
+		}
 	}
 }
