@@ -30,21 +30,24 @@ use OCP\IL10N;
 
 class Help implements ICommand {
 	private IL10N $l10n;
+	private Locator $locator;
 
-	public function __construct(IL10N $l10n) {
+	public function __construct(IL10N $l10n, Locator $locator) {
 		$this->l10n = $l10n;
+		$this->locator = $locator;
 	}
 
 	public function run(array $arguments): string {
-		$classes = array_unique(array_values(Locator::MAP));
+		$classes = array_unique($this->locator::MAP);
 
 		$output = '⛑️ DroneCI Fast Lane Helpdesk' . PHP_EOL . PHP_EOL;
-		foreach ($classes as $commandClass) {
+		foreach ($classes as $commandHandle => $commandClass) {
 			if ($commandClass === self::class) {
 				continue;
 			}
-			$command = \OCP\Server::get($commandClass);
+			$command = $this->locator->get($commandHandle);
 			$output .= $command->help() . PHP_EOL;
+			unset($command);
 		}
 		$output .= $this->l10n->t('ℹ️ Show this help:') . PHP_EOL . '!h, !help';
 
