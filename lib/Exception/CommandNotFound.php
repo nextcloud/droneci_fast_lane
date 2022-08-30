@@ -27,5 +27,4 @@ declare(strict_types=1);
 namespace OCA\DroneciFastLane\Exception;
 
 class CommandNotFound extends \Exception {
-
 }

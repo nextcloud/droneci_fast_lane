@@ -59,7 +59,7 @@ class Drone {
 			$this->baseHeader = [
 				'headers' =>
 					['Authorization' => 'Bearer ' . $this->configuration->getToken()
-				]
+					]
 			];
 		}
 		return $this->baseHeader;
@@ -83,7 +83,7 @@ class Drone {
 		}
 
 		foreach ($repoList as $repoItem) {
-			if(!$repoItem['active']) {
+			if (!$repoItem['active']) {
 				// ignore disabled repositories
 				continue;
 			}

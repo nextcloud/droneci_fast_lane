@@ -31,7 +31,6 @@ use OCP\IConfig;
 use RuntimeException;
 
 class Configuration {
-
 	private IConfig $config;
 
 	public function __construct(IConfig $config) {

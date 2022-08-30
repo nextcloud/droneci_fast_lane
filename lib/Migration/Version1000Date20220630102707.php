@@ -46,7 +46,7 @@ class Version1000Date20220630102707 extends SimpleMigrationStep {
 		/** @var ISchemaWrapper $schema */
 		$schema = $schemaClosure();
 
-		if (!$schema->hasTable( 'droneci_fl_prioritized')) {
+		if (!$schema->hasTable('droneci_fl_prioritized')) {
 			$table = $schema->createTable('droneci_fl_prioritized');
 
 			$table->addColumn('id', Types::BIGINT, [
@@ -54,9 +54,9 @@ class Version1000Date20220630102707 extends SimpleMigrationStep {
 				'notnull' => true,
 			]);
 			$table->addColumn('number', Types::INTEGER, [
-					'notnull' => true,
-					'unsigned' => true,
-				]
+				'notnull' => true,
+				'unsigned' => true,
+			]
 			);
 			$table->addColumn('namespace', Types::STRING, [
 				'notnull' => true,
@@ -67,9 +67,9 @@ class Version1000Date20220630102707 extends SimpleMigrationStep {
 				'length' => 255,
 			]);
 			$table->addColumn('created_at', Types::INTEGER, [
-					'notnull' => true,
-					'unsigned' => true,
-				]
+				'notnull' => true,
+				'unsigned' => true,
+			]
 			);
 
 			$table->setPrimaryKey(['id']);

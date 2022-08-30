@@ -32,7 +32,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ListQueue extends Command {
-
 	protected Drone $droneService;
 
 	public function __construct(Drone $droneService) {
@@ -49,7 +48,7 @@ class ListQueue extends Command {
 		$genBuild = $this->droneService->getBuildQueue();
 		foreach ($genBuild as $build) {
 			$lineBreak = strpos($build->getTitle(), "\n");
-			$title = substr($build->getTitle(),0, min($lineBreak ?: 60, 60));
+			$title = substr($build->getTitle(), 0, min($lineBreak ?: 60, 60));
 			if (strlen($title) < strlen($build->getTitle())) {
 				$title .= '…';
 			}
@@ -60,5 +59,4 @@ class ListQueue extends Command {
 
 		return 0;
 	}
-
 }

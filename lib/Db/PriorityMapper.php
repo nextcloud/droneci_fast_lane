@@ -47,5 +47,4 @@ class PriorityMapper extends QBMapper {
 
 		return $this->findEntities($query);
 	}
-
 }

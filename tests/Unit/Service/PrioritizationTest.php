@@ -36,7 +36,6 @@ use Psr\Log\LoggerInterface;
 use Test\TestCase;
 
 class PrioritizationTest extends TestCase {
-
 	protected Prioritization $prioritizationService;
 	/** @var PriorityMapper|MockObject */
 	private $mapper;
@@ -51,7 +50,8 @@ class PrioritizationTest extends TestCase {
 		$this->prioritizationService = new Prioritization($this->mapper, $this->drone, $logger);
 	}
 
-	public static function tearDownAfterClass(): void {}
+	public static function tearDownAfterClass(): void {
+	}
 
 	public function buildIdentifierProvider(): array {
 		return [

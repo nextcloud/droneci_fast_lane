@@ -68,7 +68,9 @@ class Prioritize {
 	protected function qualifySlug(string $candidate): string {
 		$parts = \explode('/', $candidate);
 		$parts = array_map('trim', $parts);
-		$parts = array_filter($parts, function(string $item) { return $item !== ''; });
+		$parts = array_filter($parts, function (string $item) {
+			return $item !== '';
+		});
 		if (count($parts) === 2) {
 			return implode('/', $parts);
 		}
@@ -85,5 +87,4 @@ class Prioritize {
 		}
 		throw new InvalidArgumentException('Invalid build number provided');
 	}
-
 }
