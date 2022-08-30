@@ -29,7 +29,7 @@ namespace OCA\DroneciFastLane\TalkCommand;
 use OCA\DroneciFastLane\Service\Drone;
 use OCP\IL10N;
 
-class ListQueue {
+class ListQueue implements ICommand {
 	private Drone $droneService;
 	private IL10N $l10n;
 
@@ -49,8 +49,9 @@ class ListQueue {
 				$currentRepo = $build->getSlug();
 				$output .= PHP_EOL . '🗃️ ' . $build->getSlug() . PHP_EOL;
 			}
+
 			$statusIcon = $build->getStatus() === Drone::BUILD_STATUS_PENDING ? '⏳' : '🏗️';
-			$output .= \sprintf("\t%s %d %s", $statusIcon, $build->getNumber(), $build->getTitle()) . PHP_EOL;
+			$output .= \sprintf("\t%s %d %s", $statusIcon, $build->getNumber(), $this->formatTitle($build->getTitle())) . PHP_EOL;
 		}
 
 		if ($output !== '') {
@@ -64,5 +65,13 @@ class ListQueue {
 
 	public function help(): string {
 		return $this->l10n->t('📋 List the build queue:') . PHP_EOL . '!lq, !list-queue' . PHP_EOL;
+	}
+
+	protected function formatTitle(string $title): string {
+		$lineBreak = strpos($title, "\n");
+		if ($lineBreak !== false) {
+			$title = substr($title, 0, $lineBreak) . '…';
+		}
+		return trim($title);
 	}
 }

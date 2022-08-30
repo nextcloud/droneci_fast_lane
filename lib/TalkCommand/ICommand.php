@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2022 Arthur Schiwon <blizzz@arthur-schiwon.de>
+ * @copyright Copyright (c) 2021 Arthur Schiwon <blizzz@arthur-schiwon.de>
  *
  * @author Arthur Schiwon <blizzz@arthur-schiwon.de>
  *
@@ -26,27 +26,7 @@ declare(strict_types=1);
 
 namespace OCA\DroneciFastLane\TalkCommand;
 
-use OCA\DroneciFastLane\Exception\CommandNotFound;
-
-class Mapper {
-	public const MAP = [
-		'!help' => Help::class,
-		'!h' => Help::class,
-		'!prio' => Prioritize::class,
-		'!p' => Prioritize::class,
-		'!list-queue' => ListQueue::class,
-		'!lq' => ListQueue::class,
-		'!list-prio' => ListPrioritized::class,
-		'!lp' => ListPrioritized::class,
-	];
-
-	/**
-	 * @throws CommandNotFound
-	 */
-	public static function find(string $command): string {
-		if (isset(self::MAP[$command])) {
-			return self::MAP[$command];
-		}
-		throw new CommandNotFound();
-	}
+interface ICommand {
+	public function run(array $arguments): string;
+	public function help(): string;
 }

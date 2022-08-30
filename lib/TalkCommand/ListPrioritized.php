@@ -31,7 +31,7 @@ use OCA\DroneciFastLane\Service\Prioritization;
 use OCP\DB\Exception;
 use OCP\IL10N;
 
-class ListPrioritized {
+class ListPrioritized implements ICommand {
 	private IL10N $l10n;
 	private Prioritization $prioritization;
 
@@ -48,7 +48,7 @@ class ListPrioritized {
 		try {
 			foreach ($this->prioritization->getQueue() as $build) {
 				$statusIcon = $build->getStatus() === Drone::BUILD_STATUS_PENDING ? '⏳' : '🏗️';
-				$output .= \sprintf("\t%s %s %d %s", $statusIcon, $build->getSlug(), $build->getNumber(), $build->getTitle()) . PHP_EOL;
+				$output .= \sprintf("\t%s %s %d %s", $statusIcon, $build->getSlug(), $build->getNumber(), $this->formatTitle($build->getTitle())) . PHP_EOL;
 			}
 		} catch (Exception$e) {
 			return $this->l10n->t('⚠️Unexpected problem while fetching queue information') ;
@@ -65,5 +65,13 @@ class ListPrioritized {
 
 	public function help(): string {
 		return $this->l10n->t('🏎️ List the priority queue:') . PHP_EOL . '!lp, !list-prio' . PHP_EOL;
+	}
+
+	protected function formatTitle(string $title): string {
+		$lineBreak = strpos($title, "\n");
+		if ($lineBreak !== false) {
+			$title = substr($title, 0, $lineBreak) . '…';
+		}
+		return trim($title);
 	}
 }

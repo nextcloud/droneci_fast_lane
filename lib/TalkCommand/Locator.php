@@ -26,33 +26,33 @@ declare(strict_types=1);
 
 namespace OCA\DroneciFastLane\TalkCommand;
 
-use OCP\IL10N;
+use OCA\DroneciFastLane\Exception\CommandNotFound;
+use Psr\Container\ContainerInterface;
 
-class Help implements ICommand {
-	private IL10N $l10n;
+class Locator {
+	public const MAP = [
+		'!help' => Help::class,
+		'!h' => Help::class,
+		'!prio' => Prioritize::class,
+		'!p' => Prioritize::class,
+		'!list-queue' => ListQueue::class,
+		'!lq' => ListQueue::class,
+		'!list-prio' => ListPrioritized::class,
+		'!lp' => ListPrioritized::class,
+	];
+	private ContainerInterface $server;
 
-	public function __construct(IL10N $l10n) {
-		$this->l10n = $l10n;
+	public function __construct(ContainerInterface $server) {
+		$this->server = $server;
 	}
 
-	public function run(array $arguments): string {
-		$classes = array_unique(array_values(Locator::MAP));
-
-		$output = '⛑️ DroneCI Fast Lane Helpdesk' . PHP_EOL . PHP_EOL;
-		foreach ($classes as $commandClass) {
-			if ($commandClass === self::class) {
-				continue;
-			}
-			$command = \OCP\Server::get($commandClass);
-			$output .= $command->help() . PHP_EOL;
+	/**
+	 * @throws CommandNotFound
+	 */
+	public function get(string $command): ICommand {
+		if (isset(self::MAP[$command])) {
+			return $this->server->get(self::MAP[$command]);
 		}
-		$output .= $this->l10n->t('ℹ️ Show this help:') . PHP_EOL . '!h, !help';
-
-		return $output;
-	}
-
-	public function help(): string {
-		// NOOP
-		return '';
+		throw new CommandNotFound();
 	}
 }

@@ -29,7 +29,7 @@ namespace OCA\DroneciFastLane\Listener;
 use InvalidArgumentException;
 use OCA\DroneciFastLane\Exception\CommandNotFound;
 use OCA\DroneciFastLane\Service\Configuration;
-use OCA\DroneciFastLane\TalkCommand\Mapper;
+use OCA\DroneciFastLane\TalkCommand\Locator;
 use OCA\Talk\Chat\ChatManager;
 use OCA\Talk\Events\ChatParticipantEvent;
 use OCA\Talk\Room;
@@ -37,9 +37,11 @@ use OCP\Server;
 
 class TalkListener {
 	private Configuration $configuration;
+	private Locator $locator;
 
-	public function __construct(Configuration $configuration) {
+	public function __construct(Configuration $configuration, Locator $locator) {
 		$this->configuration = $configuration;
+		$this->locator = $locator;
 	}
 
 	public static function handleCommand(ChatParticipantEvent $event) {
@@ -70,8 +72,7 @@ class TalkListener {
 		$command = array_shift($arguments);
 
 		try {
-			$commandClass = Mapper::find($command);
-			$command = Server::get($commandClass);
+			$command = $this->locator->get($command);
 			$output = $command->run($arguments);
 
 			$message->setMessage($this->finalizeOutput($output, $event));

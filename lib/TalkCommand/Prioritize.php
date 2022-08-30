@@ -30,7 +30,7 @@ use InvalidArgumentException;
 use OCA\DroneciFastLane\Service\Prioritization;
 use OCP\IL10N;
 
-class Prioritize {
+class Prioritize implements ICommand {
 	private Prioritization $prioritization;
 	private IL10N $l10n;
 
