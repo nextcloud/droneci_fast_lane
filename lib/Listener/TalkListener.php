@@ -45,7 +45,12 @@ class TalkListener {
 	}
 
 	public static function handleCommand(ChatParticipantEvent $event) {
-		$listener = Server::get(self::class);
+		/** @var TalkListener $listener */
+		if (\class_exists(Server::class)) {
+			$listener = Server::get(self::class);
+		} else {
+			$listener = \OC::$server->get(self::class);
+		}
 		$listener->handle($event);
 	}
 
