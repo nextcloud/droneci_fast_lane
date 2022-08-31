@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2022 Arthur Schiwon <blizzz@arthur-schiwon.de>
+ * @copyright Copyright (c) 2021 Arthur Schiwon <blizzz@arthur-schiwon.de>
  *
  * @author Arthur Schiwon <blizzz@arthur-schiwon.de>
  *
@@ -24,27 +24,9 @@ declare(strict_types=1);
  *
  */
 
-namespace OCA\DroneciFastLane\Db;
+namespace OCA\DroneciFastLane\TalkCommand;
 
-use OCA\DroneciFastLane\Entity\BasicBuild;
-use OCP\AppFramework\Db\QBMapper;
-use OCP\DB\Exception;
-use OCP\IDBConnection;
-
-class PriorityMapper extends QBMapper {
-	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'droneci_fl_prioritized', BasicBuild::class);
-	}
-
-	/**
-	 * @return BasicBuild[]
-	 * @throws Exception
-	 */
-	public function getBuilds(): array {
-		$query = $this->db->getQueryBuilder();
-		$query->select('*')
-			->from($this->getTableName());
-
-		return $this->findEntities($query);
-	}
+interface ICommand {
+	public function run(array $arguments): string;
+	public function help(): string;
 }

@@ -33,7 +33,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ListPrioritized extends Command {
-
 	private Prioritization $prioritization;
 
 	public function __construct(Prioritization $prioritization) {
@@ -55,7 +54,7 @@ class ListPrioritized extends Command {
 		foreach ($generator as $build) {
 			$isEmpty = false;
 			$lineBreak = strpos($build->getTitle(), "\n");
-			$title = substr($build->getTitle(),0, min($lineBreak ?: 60, 60));
+			$title = substr($build->getTitle(), 0, min($lineBreak ?: 60, 60));
 			if (strlen($title) < strlen($build->getTitle())) {
 				$title .= '…';
 			}

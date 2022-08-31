@@ -32,7 +32,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class BuildPrioritize extends \Symfony\Component\Console\Command\Command {
-
 	private Prioritization $prioritization;
 
 	public function __construct(Prioritization $prioritization) {

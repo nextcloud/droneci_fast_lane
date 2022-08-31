@@ -24,39 +24,38 @@ declare(strict_types=1);
  *
  */
 
-namespace OCA\DroneciFastLane\Service;
+namespace OCA\DroneciFastLane\TalkCommand;
 
-use OCA\DroneciFastLane\AppInfo\Application;
-use OCP\IConfig;
-use RuntimeException;
+use OCP\IL10N;
 
-class Configuration {
-	private IConfig $config;
+class Help implements ICommand {
+	private IL10N $l10n;
+	private Locator $locator;
 
-	public function __construct(IConfig $config) {
-		$this->config = $config;
+	public function __construct(IL10N $l10n, Locator $locator) {
+		$this->l10n = $l10n;
+		$this->locator = $locator;
 	}
 
-	public function getHost(): string {
-		$host = $this->config->getAppValue(Application::APP_ID, 'host');
-		$host = filter_var($host, FILTER_VALIDATE_URL);
-		if ($host === false) {
-			throw new RuntimeException('Invalid DroneCI host');
+	public function run(array $arguments): string {
+		$classes = array_unique($this->locator::MAP);
+
+		$output = '⛑️ DroneCI Fast Lane Helpdesk' . PHP_EOL . PHP_EOL;
+		foreach ($classes as $commandHandle => $commandClass) {
+			if ($commandClass === self::class) {
+				continue;
+			}
+			$command = $this->locator->get($commandHandle);
+			$output .= $command->help() . PHP_EOL;
+			unset($command);
 		}
-		return rtrim($host, '/');
+		$output .= $this->l10n->t('ℹ️ Show this help:') . PHP_EOL . '!h, !help';
+
+		return $output;
 	}
 
-	public function getToken(): string {
-		$token = trim($this->config->getAppValue(Application::APP_ID, 'apitoken'));
-		if ($token === '') {
-			throw new RuntimeException('Drone API token not set');
-		}
-		return $token;
-	}
-
-	public function getRooms(): array {
-		$roomList = trim($this->config->getAppValue(Application::APP_ID, 'rooms'));
-		$rooms = explode(',', $roomList);
-		return array_map('trim', $rooms);
+	public function help(): string {
+		// NOOP
+		return '';
 	}
 }

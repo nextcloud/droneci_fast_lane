@@ -24,27 +24,35 @@ declare(strict_types=1);
  *
  */
 
-namespace OCA\DroneciFastLane\Db;
+namespace OCA\DroneciFastLane\TalkCommand;
 
-use OCA\DroneciFastLane\Entity\BasicBuild;
-use OCP\AppFramework\Db\QBMapper;
-use OCP\DB\Exception;
-use OCP\IDBConnection;
+use OCA\DroneciFastLane\Exception\CommandNotFound;
+use Psr\Container\ContainerInterface;
 
-class PriorityMapper extends QBMapper {
-	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'droneci_fl_prioritized', BasicBuild::class);
+class Locator {
+	public const MAP = [
+		'!help' => Help::class,
+		'!h' => Help::class,
+		'!prio' => Prioritize::class,
+		'!p' => Prioritize::class,
+		'!list-queue' => ListQueue::class,
+		'!lq' => ListQueue::class,
+		'!list-prio' => ListPrioritized::class,
+		'!lp' => ListPrioritized::class,
+	];
+	private ContainerInterface $server;
+
+	public function __construct(ContainerInterface $server) {
+		$this->server = $server;
 	}
 
 	/**
-	 * @return BasicBuild[]
-	 * @throws Exception
+	 * @throws CommandNotFound
 	 */
-	public function getBuilds(): array {
-		$query = $this->db->getQueryBuilder();
-		$query->select('*')
-			->from($this->getTableName());
-
-		return $this->findEntities($query);
+	public function get(string $command): ICommand {
+		if (isset(self::MAP[$command])) {
+			return $this->server->get(self::MAP[$command]);
+		}
+		throw new CommandNotFound();
 	}
 }
