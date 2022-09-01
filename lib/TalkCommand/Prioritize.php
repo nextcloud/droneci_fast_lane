@@ -47,6 +47,9 @@ class Prioritize implements ICommand {
 		$slug = $this->qualifySlug(array_shift($arguments));
 		$build = $this->qualifyBuildNumber(array_shift($arguments));
 		$status = $this->prioritization->setPrioritized($slug, $build);
+		if ($status) {
+			$this->prioritization->reorganizeQueue();
+		}
 
 		return $this->prepareOutput($status, $slug, $build);
 	}

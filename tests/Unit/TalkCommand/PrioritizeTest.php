@@ -61,6 +61,9 @@ class PrioritizeTest extends TestCase {
 			->method('setPrioritized')
 			->willReturn($serviceResult);
 
+		$this->prioritizationService->expects($this->exactly($serviceResult ? 1 : 0))
+			->method('reorganizeQueue');
+
 		$output = $this->command->run(['nextcloud/server', '1234']);
 		if ($serviceResult) {
 			$this->assertStringContainsString('Prioritized build 1234 of nextcloud/server', $output);
