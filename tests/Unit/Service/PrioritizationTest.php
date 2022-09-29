@@ -159,13 +159,15 @@ class PrioritizationTest extends TestCase {
 
 	public function testReorganizeQueue(): void {
 		$droneBuildList = [
-			$this->makeDroneBuild(1200),  // restart
+			$this->makeDroneBuild(1200),  // leave as running
 			$this->makeDroneBuild(1201),  // restart
+			$this->makeDroneBuild(1202),  // restart
 			$this->makeDroneBuild(1203),  // prio
 			$this->makeDroneBuild(1205),  // leave
 		];
+		$droneBuildList[0]->setStatus(Drone::BUILD_STATUS_RUNNING);
 
-		$prioBuildList = [BasicBuild::fromDerivedBuild($droneBuildList[2])];
+		$prioBuildList = [BasicBuild::fromDerivedBuild($droneBuildList[3])];
 
 		$this->mapper->expects($this->once())
 			->method('getBuilds')
