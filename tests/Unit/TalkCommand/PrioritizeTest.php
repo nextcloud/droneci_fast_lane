@@ -33,7 +33,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Test\TestCase;
 
 class PrioritizeTest extends TestCase {
-
 	/** @var Prioritization|Prioritization&MockObject|MockObject */
 	private $prioritizationService;
 	/** @var IL10N|IL10N&MockObject|MockObject */
