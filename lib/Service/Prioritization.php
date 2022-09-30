@@ -84,6 +84,7 @@ class Prioritization {
 		foreach ($buildQueueGen as $build) {
 			if (isset($prioritizedBuilds[$build->uniqueName()])
 				|| $build->getCreatedAt() > $oldestPrioBuildTime
+				|| $build->getStatus() === Drone::BUILD_STATUS_RUNNING
 			) {
 				continue;
 			}
