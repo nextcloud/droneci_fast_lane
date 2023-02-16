@@ -28,6 +28,7 @@ namespace OCA\DroneciFastLane\TalkCommand;
 
 use OCA\DroneciFastLane\Service\Drone;
 use OCP\IL10N;
+use function sprintf;
 
 class ListQueue implements ICommand {
 	private Drone $droneService;
@@ -51,7 +52,7 @@ class ListQueue implements ICommand {
 			}
 
 			$statusIcon = $build->getStatus() === Drone::BUILD_STATUS_PENDING ? '⏳' : '🏗️';
-			$output .= \sprintf("\t%s %d %s", $statusIcon, $build->getNumber(), $this->formatTitle($build->getTitle())) . PHP_EOL;
+			$output .= sprintf("\t%s %d %s", $statusIcon, $build->getNumber(), $this->formatTitle($build->getTitle())) . PHP_EOL;
 		}
 
 		if ($output !== '') {

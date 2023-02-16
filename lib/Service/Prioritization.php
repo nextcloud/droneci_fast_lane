@@ -94,7 +94,7 @@ class Prioritization {
 					'build' => $build->uniqueName(),
 				]);
 				$this->drone->restartBuild($build);
-			} catch (\RuntimeException $e) {
+			} catch (RuntimeException $e) {
 				$this->logger->error('An error occurred while restarting build {build}', [
 					'app' => Application::APP_ID,
 					'build' => $build->uniqueName(),

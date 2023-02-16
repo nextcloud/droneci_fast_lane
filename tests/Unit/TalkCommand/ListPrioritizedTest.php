@@ -26,18 +26,19 @@ declare(strict_types=1);
 
 namespace OCA\DroneciFastLane\Tests\TalkCommand;
 
+use Generator;
 use OCA\DroneciFastLane\Entity\DroneBuild;
 use OCA\DroneciFastLane\Service\Prioritization;
 use OCA\DroneciFastLane\TalkCommand\ListPrioritized;
 use OCP\IL10N;
 use PHPUnit\Framework\MockObject\MockObject;
 use Test\TestCase;
+use function bin2hex;
+use function random_bytes;
 
 class ListPrioritizedTest extends TestCase {
-	/** @var Prioritization|Prioritization&MockObject|MockObject */
-	private $prioritizationService;
-	/** @var IL10N|IL10N&MockObject|MockObject */
-	private $l10n;
+	private Prioritization|MockObject $prioritizationService;
+	private IL10N|MockObject $l10n;
 	private ListPrioritized $command;
 
 	public function setUp(): void {
@@ -59,7 +60,7 @@ class ListPrioritizedTest extends TestCase {
 	public function testRun(bool $isQueueEmpty): void {
 		$this->prioritizationService->expects($this->once())
 			->method('getQueue')
-			->willReturnCallback(function () use ($isQueueEmpty): \Generator {
+			->willReturnCallback(function () use ($isQueueEmpty): Generator {
 				if ($isQueueEmpty) {
 					yield from [];
 				} else {
@@ -72,7 +73,7 @@ class ListPrioritizedTest extends TestCase {
 							->willReturn($i);
 						$buildMock->expects($this->atLeastOnce())
 							->method('getTitle')
-							->willReturn(\bin2hex(\random_bytes(5)));
+							->willReturn(bin2hex(random_bytes(5)));
 						yield $buildMock;
 					}
 				}
