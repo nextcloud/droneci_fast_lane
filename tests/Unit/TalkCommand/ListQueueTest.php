@@ -26,17 +26,19 @@ declare(strict_types=1);
 
 namespace OCA\DroneciFastLane\Tests\TalkCommand;
 
+use Generator;
 use OCA\DroneciFastLane\Entity\DroneBuild;
 use OCA\DroneciFastLane\Service\Drone;
 use OCA\DroneciFastLane\TalkCommand\ListQueue;
 use OCP\IL10N;
 use PHPUnit\Framework\MockObject\MockObject;
+use Test\TestCase;
+use function bin2hex;
+use function random_bytes;
 
-class ListQueueTest extends \Test\TestCase {
-	/** @var Drone|Drone&MockObject|MockObject */
-	private $droneService;
-	/** @var IL10N|IL10N&MockObject|MockObject */
-	private $l10n;
+class ListQueueTest extends TestCase {
+	private Drone|MockObject $droneService;
+	private IL10N|MockObject $l10n;
 	private ListQueue $command;
 
 	public function setUp(): void {
@@ -58,7 +60,7 @@ class ListQueueTest extends \Test\TestCase {
 	public function testRun(bool $isQueueEmpty): void {
 		$this->droneService->expects($this->once())
 			->method('getBuildQueue')
-			->willReturnCallback(function () use ($isQueueEmpty): \Generator {
+			->willReturnCallback(function () use ($isQueueEmpty): Generator {
 				if ($isQueueEmpty) {
 					yield from [];
 				} else {
@@ -75,7 +77,7 @@ class ListQueueTest extends \Test\TestCase {
 							->willReturn('nextcloud/server');
 						$buildMock->expects($this->atLeastOnce())
 							->method('getTitle')
-							->willReturn(\bin2hex(\random_bytes(5)));
+							->willReturn(bin2hex(random_bytes(5)));
 						yield $buildMock;
 					}
 				}

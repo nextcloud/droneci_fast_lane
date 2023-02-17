@@ -12,7 +12,7 @@
     <category>tools</category>
     <bugs>https://github.com/nextcloud/droneci_fast_lane</bugs>
     <dependencies>
-        <nextcloud min-version="24" max-version="26"/>
+        <nextcloud min-version="26" max-version="26"/>
     </dependencies>
     <commands>
 		<command>OCA\DroneciFastLane\Command\BuildPrioritize</command>

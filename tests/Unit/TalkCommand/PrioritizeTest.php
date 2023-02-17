@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace OCA\DroneciFastLane\Tests\TalkCommand;
 
+use InvalidArgumentException;
 use OCA\DroneciFastLane\Service\Prioritization;
 use OCA\DroneciFastLane\TalkCommand\Prioritize;
 use OCP\IL10N;
@@ -33,10 +34,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Test\TestCase;
 
 class PrioritizeTest extends TestCase {
-	/** @var Prioritization|Prioritization&MockObject|MockObject */
-	private $prioritizationService;
-	/** @var IL10N|IL10N&MockObject|MockObject */
-	private $l10n;
+	private Prioritization|MockObject $prioritizationService;
+	private IL10N|MockObject $l10n;
 	private Prioritize $command;
 
 	public function setUp(): void {
@@ -75,7 +74,7 @@ class PrioritizeTest extends TestCase {
 	 * @dataProvider invalidArgumentsProvider
 	 */
 	public function testRunInvalidArgument(string $slug, string $number): void {
-		$this->expectException(\InvalidArgumentException::class);
+		$this->expectException(InvalidArgumentException::class);
 		$this->command->run([$slug, $number]);
 	}
 

@@ -29,6 +29,7 @@ namespace OCA\DroneciFastLane\TalkCommand;
 use InvalidArgumentException;
 use OCA\DroneciFastLane\Service\Prioritization;
 use OCP\IL10N;
+use function explode;
 
 class Prioritize implements ICommand {
 	private Prioritization $prioritization;
@@ -69,7 +70,7 @@ class Prioritize implements ICommand {
 	 * @throws InvalidArgumentException
 	 */
 	protected function qualifySlug(string $candidate): string {
-		$parts = \explode('/', $candidate);
+		$parts = explode('/', $candidate);
 		$parts = array_map('trim', $parts);
 		$parts = array_filter($parts, function (string $item) {
 			return $item !== '';

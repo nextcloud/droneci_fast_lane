@@ -33,7 +33,9 @@ use OCA\DroneciFastLane\Service\Drone;
 use OCA\DroneciFastLane\Service\Prioritization;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Test\TestCase;
+use function random_int;
 
 class PrioritizationTest extends TestCase {
 	protected Prioritization $prioritizationService;
@@ -94,7 +96,7 @@ class PrioritizationTest extends TestCase {
 			$droneBuild->setRepo('server');
 			$droneMocker->willReturn($droneBuild);
 		} else {
-			$droneMocker->willThrowException(new \RuntimeException('kaput'));
+			$droneMocker->willThrowException(new RuntimeException('kaput'));
 		}
 
 		$result = $this->prioritizationService->setPrioritized($slug, $number);
@@ -105,7 +107,7 @@ class PrioritizationTest extends TestCase {
 		$build = new BasicBuild();
 		$build->setNamespace('nextcloud');
 		$build->setRepo('server');
-		$no = \random_int(1, 99999);
+		$no = random_int(1, 99999);
 		$build->setNumber($no);
 		$build->setCreatedAt(time() - (99999 - $no));
 		return $build;
@@ -115,7 +117,7 @@ class PrioritizationTest extends TestCase {
 		$build = new DroneBuild();
 		$build->setNamespace('nextcloud');
 		$build->setRepo('server');
-		$no = $no ?? \random_int(1, 99999);
+		$no = $no ?? random_int(1, 99999);
 		$build->setNumber($no);
 		$build->setCreatedAt(time() - (99999 - $no));
 		$build->setStatus(Drone::BUILD_STATUS_PENDING);
@@ -190,7 +192,7 @@ class PrioritizationTest extends TestCase {
 	/**
 	 * @return BasicBuild|MockObject
 	 */
-	protected function getPrioritizedBuildMock(int $number) {
+	protected function getPrioritizedBuildMock(int $number): BasicBuild|MockObject {
 		$build = $this->createMock(BasicBuild::class);
 		$build->expects($this->any())
 			->method('getNumber')

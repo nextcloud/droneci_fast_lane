@@ -34,6 +34,7 @@ use OCA\Talk\Chat\ChatManager;
 use OCA\Talk\Events\ChatParticipantEvent;
 use OCA\Talk\Room;
 use OCP\Server;
+use function str_replace;
 
 class TalkListener {
 	private Configuration $configuration;
@@ -44,13 +45,9 @@ class TalkListener {
 		$this->locator = $locator;
 	}
 
-	public static function handleCommand(ChatParticipantEvent $event) {
+	public static function handleCommand(ChatParticipantEvent $event): void {
 		/** @var TalkListener $listener */
-		if (\class_exists(Server::class)) {
-			$listener = Server::get(self::class);
-		} else {
-			$listener = \OC::$server->get(self::class);
-		}
+		$listener = Server::get(self::class);
 		$listener->handle($event);
 	}
 
@@ -58,9 +55,9 @@ class TalkListener {
 		return in_array($room->getToken(), $this->configuration->getRooms());
 	}
 
-	public function handle(ChatParticipantEvent $event) {
+	public function handle(ChatParticipantEvent $event): void {
 		$message = $event->getComment();
-		if (strpos($message->getMessage(), '!') !== 0) {
+		if (!str_starts_with($message->getMessage(), '!')) {
 			return;
 		}
 
@@ -90,6 +87,6 @@ class TalkListener {
 	}
 
 	protected function finalizeOutput(string $output, ChatParticipantEvent $event): string {
-		return \str_replace('{requester}', $event->getParticipant()->getAttendee()->getDisplayName(), $output);
+		return str_replace('{requester}', $event->getParticipant()->getAttendee()->getDisplayName(), $output);
 	}
 }
