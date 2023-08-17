@@ -31,6 +31,7 @@ use OCA\DroneciFastLane\Exception\CommandNotFound;
 use OCA\DroneciFastLane\Service\Configuration;
 use OCA\DroneciFastLane\TalkCommand\Locator;
 use OCA\Talk\Chat\ChatManager;
+use OCA\Talk\Events\ChatEvent;
 use OCA\Talk\Events\ChatParticipantEvent;
 use OCA\Talk\Room;
 use OCP\Server;
@@ -45,7 +46,11 @@ class TalkListener {
 		$this->locator = $locator;
 	}
 
-	public static function handleCommand(ChatParticipantEvent $event): void {
+	public static function handleCommand(ChatEvent $event): void {
+		if (!$event instanceof ChatParticipantEvent) {
+			return;
+		}
+
 		/** @var TalkListener $listener */
 		$listener = Server::get(self::class);
 		$listener->handle($event);
