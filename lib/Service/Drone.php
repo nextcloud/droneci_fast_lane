@@ -28,9 +28,9 @@ namespace OCA\DroneciFastLane\Service;
 
 use Exception;
 use Generator;
-use RuntimeException;
 use OCA\DroneciFastLane\Entity\DroneBuild;
 use OCP\Http\Client\IClientService;
+use RuntimeException;
 use function json_decode;
 use function sprintf;
 
