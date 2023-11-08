@@ -48,15 +48,15 @@ class ListQueue implements ICommand {
 		foreach ($this->droneService->getBuildQueue() as $build) {
 			if ($currentRepo !== $build->getSlug()) {
 				$currentRepo = $build->getSlug();
-				$output .= PHP_EOL . '🗃️ ' . $build->getSlug() . PHP_EOL;
+				$output .= PHP_EOL . '## 🗃️ ' . $build->getSlug() . PHP_EOL;
 			}
 
 			$statusIcon = $build->getStatus() === Drone::BUILD_STATUS_PENDING ? '⏳' : '🏗️';
-			$output .= sprintf("\t%s %d %s", $statusIcon, $build->getNumber(), $this->formatTitle($build->getTitle())) . PHP_EOL;
+			$output .= sprintf("- %s %d %s", $statusIcon, $build->getNumber(), $this->formatTitle($build->getTitle())) . PHP_EOL;
 		}
 
 		if ($output !== '') {
-			$output = $this->l10n->t('📋 Build queue by repository' . PHP_EOL) . $output;
+			$output = $this->l10n->t('# 📋 Build queue by repository' . PHP_EOL) . $output;
 		} else {
 			$output = $this->l10n->t('📋 The build queue is empty') ;
 		}

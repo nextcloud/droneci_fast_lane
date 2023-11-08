@@ -28,7 +28,6 @@ namespace OCA\DroneciFastLane\TalkCommand;
 
 use OCA\DroneciFastLane\Service\Drone;
 use OCA\DroneciFastLane\Service\Prioritization;
-use OCP\DB\Exception;
 use OCP\IL10N;
 use function sprintf;
 
@@ -49,14 +48,14 @@ class ListPrioritized implements ICommand {
 		try {
 			foreach ($this->prioritization->getQueue() as $build) {
 				$statusIcon = $build->getStatus() === Drone::BUILD_STATUS_PENDING ? '⏳' : '🏗️';
-				$output .= sprintf("\t%s %s %d %s", $statusIcon, $build->getSlug(), $build->getNumber(), $this->formatTitle($build->getTitle())) . PHP_EOL;
+				$output .= sprintf("- %s %s %d %s", $statusIcon, $build->getSlug(), $build->getNumber(), $this->formatTitle($build->getTitle())) . PHP_EOL;
 			}
-		} catch (Exception$e) {
-			return $this->l10n->t('⚠️Unexpected problem while fetching queue information') ;
+		} catch (\RuntimeException) {
+			return $this->l10n->t('⚠️ Unexpected problem while fetching queue information') ;
 		}
 
 		if ($output !== '') {
-			$output = $this->l10n->t('🏎️ Priority queue' . PHP_EOL) . $output;
+			$output = $this->l10n->t('# 🏎️ Priority queue' . PHP_EOL) . $output;
 		} else {
 			$output = $this->l10n->t('🏎️ The priority queue is empty') ;
 		}
