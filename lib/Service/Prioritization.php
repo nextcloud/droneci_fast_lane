@@ -61,7 +61,7 @@ class Prioritization {
 			$build = $this->drone->getBuildInfo($buildNumber, $namespace, $repo);
 			$prioBuild = BasicBuild::fromDerivedBuild($build);
 			$this->mapper->insert($prioBuild);
-		} catch (RuntimeException|Exception $e) {
+		} catch (RuntimeException|Exception) {
 			return false;
 		}
 
@@ -106,7 +106,7 @@ class Prioritization {
 
 	/**
 	 * @return Generator<string, DroneBuild>
-	 * @throws Exception
+	 * @throws RuntimeException
 	 */
 	public function getQueue(): Generator {
 		$storedBuilds = $this->mapper->getBuilds();

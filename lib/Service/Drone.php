@@ -136,6 +136,11 @@ class Drone {
 			$buildItem = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 			return $this->buildItemToObject($buildItem, $namespace, $repo);
 		} catch (Exception $e) {
+			if ($e->getCode() === 404) {
+				$build = new DroneBuild();
+				$build->setStatus('x_expired');
+				return $build;
+			}
 			throw new RuntimeException('Error while getting build list', $e->getCode(), $e);
 		}
 	}
