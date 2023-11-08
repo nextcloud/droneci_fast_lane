@@ -31,36 +31,29 @@ use OCA\DroneciFastLane\Exception\CommandNotFound;
 use OCA\DroneciFastLane\Service\Configuration;
 use OCA\DroneciFastLane\TalkCommand\Locator;
 use OCA\Talk\Chat\ChatManager;
-use OCA\Talk\Events\ChatEvent;
-use OCA\Talk\Events\ChatParticipantEvent;
+use OCA\Talk\Events\BeforeChatMessageSentEvent;
 use OCA\Talk\Room;
-use OCP\Server;
+use OCP\EventDispatcher\Event;
+use OCP\EventDispatcher\IEventListener;
 use function str_replace;
 
-class TalkListener {
-	private Configuration $configuration;
-	private Locator $locator;
+class TalkListener implements IEventListener {
 
-	public function __construct(Configuration $configuration, Locator $locator) {
-		$this->configuration = $configuration;
-		$this->locator = $locator;
-	}
-
-	public static function handleCommand(ChatEvent $event): void {
-		if (!$event instanceof ChatParticipantEvent) {
-			return;
-		}
-
-		/** @var TalkListener $listener */
-		$listener = Server::get(self::class);
-		$listener->handle($event);
+	public function __construct(
+		private Configuration $configuration,
+		private Locator $locator,
+	) {
 	}
 
 	protected function isValidRoom(Room $room): bool {
 		return in_array($room->getToken(), $this->configuration->getRooms());
 	}
 
-	public function handle(ChatParticipantEvent $event): void {
+	public function handle(Event $event): void {
+		if (!$event instanceof BeforeChatMessageSentEvent) {
+			return;
+		}
+
 		$message = $event->getComment();
 		if (!str_starts_with($message->getMessage(), '!')) {
 			return;
@@ -85,13 +78,13 @@ class TalkListener {
 			$message->setMessage($this->finalizeOutput($output, $event));
 			$message->setActor('bots', 'DroneCI Fast Lane');
 			$message->setVerb(ChatManager::VERB_COMMAND);
-		} catch (CommandNotFound|InvalidArgumentException $e) {
+		} catch (CommandNotFound|InvalidArgumentException) {
 			// eat it
 			return;
 		}
 	}
 
-	protected function finalizeOutput(string $output, ChatParticipantEvent $event): string {
+	protected function finalizeOutput(string $output, BeforeChatMessageSentEvent $event): string {
 		return str_replace('{requester}', $event->getParticipant()->getAttendee()->getDisplayName(), $output);
 	}
 }

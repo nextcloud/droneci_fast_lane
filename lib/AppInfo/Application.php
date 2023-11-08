@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace OCA\DroneciFastLane\AppInfo;
 
 use OCA\DroneciFastLane\Listener\TalkListener;
-use OCA\Talk\Chat\ChatManager;
+use OCA\Talk\Events\BeforeChatMessageSentEvent;
 use OCP\App\IAppManager;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
@@ -52,7 +52,7 @@ class Application extends App implements IBootstrap {
 		if ($appManager->isEnabledForUser('spreed')) {
 			/** @var IEventDispatcher $dispatcher */
 			$dispatcher = $context->getServerContainer()->get(IEventDispatcher::class);
-			$dispatcher->addListener(ChatManager::EVENT_BEFORE_MESSAGE_SEND, [TalkListener::class, 'handleCommand']);
+			$dispatcher->addServiceListener(BeforeChatMessageSentEvent::class, TalkListener::class);
 		}
 	}
 }
