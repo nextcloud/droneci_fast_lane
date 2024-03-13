@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace OCA\DroneciFastLane\Command;
 
 use OCA\DroneciFastLane\Service\Prioritization;
-use OCP\DB\Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -45,9 +44,6 @@ class ListPrioritized extends Command {
 		$this->setDescription('Lists running and pending priorized builds on drone');
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$generator = $this->prioritization->getQueue();
 		$isEmpty = true;
