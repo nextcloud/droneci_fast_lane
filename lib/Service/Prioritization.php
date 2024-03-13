@@ -106,7 +106,7 @@ class Prioritization {
 
 	/**
 	 * @return Generator<string, DroneBuild>
-	 * @throws RuntimeException
+	 * @throws Exception
 	 */
 	public function getQueue(): Generator {
 		$storedBuilds = $this->mapper->getBuilds();
