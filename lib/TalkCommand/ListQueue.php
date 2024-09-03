@@ -52,7 +52,7 @@ class ListQueue implements ICommand {
 			}
 
 			$statusIcon = $build->getStatus() === Drone::BUILD_STATUS_PENDING ? '⏳' : '🏗️';
-			$output .= sprintf("- %s %d %s", $statusIcon, $build->getNumber(), $this->formatTitle($build->getTitle())) . PHP_EOL;
+			$output .= sprintf('- %s %d %s', $statusIcon, $build->getNumber(), $this->formatTitle($build->getTitle())) . PHP_EOL;
 		}
 
 		if ($output !== '') {
