@@ -48,7 +48,7 @@ class ListPrioritized implements ICommand {
 		try {
 			foreach ($this->prioritization->getQueue() as $build) {
 				$statusIcon = $build->getStatus() === Drone::BUILD_STATUS_PENDING ? '⏳' : '🏗️';
-				$output .= sprintf("- %s %s %d %s", $statusIcon, $build->getSlug(), $build->getNumber(), $this->formatTitle($build->getTitle())) . PHP_EOL;
+				$output .= sprintf('- %s %s %d %s', $statusIcon, $build->getSlug(), $build->getNumber(), $this->formatTitle($build->getTitle())) . PHP_EOL;
 			}
 		} catch (\RuntimeException) {
 			return $this->l10n->t('⚠️ Unexpected problem while fetching queue information') ;
