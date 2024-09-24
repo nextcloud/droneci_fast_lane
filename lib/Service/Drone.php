@@ -48,7 +48,7 @@ class Drone {
 
 	public function __construct(
 		Configuration $configuration,
-		IClientService $httpClientService
+		IClientService $httpClientService,
 	) {
 		$this->configuration = $configuration;
 		$this->httpClientService = $httpClientService;
