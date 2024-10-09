@@ -27,18 +27,18 @@ declare(strict_types=1);
 namespace OCA\DroneciFastLane\Service;
 
 use OCA\DroneciFastLane\AppInfo\Application;
-use OCP\IConfig;
+use OCP\IAppConfig;
 use RuntimeException;
 
 class Configuration {
-	private IConfig $config;
 
-	public function __construct(IConfig $config) {
-		$this->config = $config;
+	public function __construct(
+		private IAppConfig $config,
+	) {
 	}
 
 	public function getHost(): string {
-		$host = $this->config->getAppValue(Application::APP_ID, 'host');
+		$host = $this->config->getValueString(Application::APP_ID, 'host', '', true);
 		$host = filter_var($host, FILTER_VALIDATE_URL);
 		if ($host === false) {
 			throw new RuntimeException('Invalid DroneCI host');
@@ -47,7 +47,7 @@ class Configuration {
 	}
 
 	public function getToken(): string {
-		$token = trim($this->config->getAppValue(Application::APP_ID, 'apitoken'));
+		$token = trim($this->config->getValueString(Application::APP_ID, 'apitoken', '', true));
 		if ($token === '') {
 			throw new RuntimeException('Drone API token not set');
 		}
@@ -55,8 +55,15 @@ class Configuration {
 	}
 
 	public function getRooms(): array {
-		$roomList = trim($this->config->getAppValue(Application::APP_ID, 'rooms'));
+		$roomList = trim($this->config->getValueString(Application::APP_ID, 'rooms', '', true));
 		$rooms = explode(',', $roomList);
 		return array_map('trim', $rooms);
+	}
+
+	public function configure(): void {
+		$this->config->updateLazy(Application::APP_ID, 'host', true);
+		$this->config->updateLazy(Application::APP_ID, 'rooms', true);
+		$this->config->updateLazy(Application::APP_ID, 'apitoken', true);
+		$this->config->updateSensitive(Application::APP_ID, 'apitoken', true);
 	}
 }
