@@ -4,7 +4,11 @@
     <id>droneci_fast_lane</id>
     <name>DroneCI Fast Lane</name>
     <summary>Queue manager for Drone CI</summary>
-    <description><![CDATA[A simple manager to manipulate Drone CI's FIFO queue.]]></description>
+	<description>
+		<![CDATA[**⚠ This app is discontinued and unmaintained ⚠**
+
+		A simple manager to manipulate Drone CI's FIFO queue.]]>
+	</description>
     <version>1.6.0</version>
     <licence>agpl</licence>
     <author mail="blizzz@arthur-schiwon.de">Arthur Schiwon</author>
