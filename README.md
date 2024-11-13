@@ -1,5 +1,7 @@
 # DroneCI Fast Lane
 
+**⚠ This app is discontinued and unmaintained ⚠**
+
 DroneCI is a continuous integration tool, to run test cases after events on the version control system. When, for example, a pull request was created, a build is queued on the DroneCI server. DroneCI uses a simple FIFO queues: the oldest item in the list will be handled next.
 
 Sometimes however, when there are a few items in the queue, one (or a few) specific builds should be handled with priority. While DroneCI does not offer a feature, it is possible to cancel and restart builds, that are in front of the target build. By restarting them, they will be appended to the queue.
